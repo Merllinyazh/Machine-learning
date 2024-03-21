@@ -1,0 +1,14 @@
+       Vapnik-Chervonenkis (VC) dimension
+
+we have a dataset containing N points. These N points can be labeled in 2N ways as positive and negative. Therefore, 2N different learning problems can be defined by N data points. If for any of these problems, we can find a hypothesis h ∈ H that separates the positive examples from the negative, then we say H shatters N points. That is, any learning problem definable by N examples can be learned with no error by a hypothesis drawn from H. The maximum number of points that VC dimension can be shattered by H is called the Vapnik-Chervonenkis (VC) dimension of H, is denoted as VC(H), and measures the capacity of H.
+
+        
+Consider a scenario where we have a collection of points on a graph, and each point can be labeled as either positive or negative. The aim is to draw shapes or lines (known as hypotheses) on the graph in such a way that all positive points fall on one side of the shape or line, while all negative points fall on the other side.
+
+The Vapnik-Chervonenkis (VC) dimension serves as a measure of how flexible our ability to draw these shapes or lines is. It indicates the maximum number of points we can perfectly separate with our shapes or lines.
+
+For instance, if we're drawing rectangles on the graph and are restricted to drawing them with sides parallel to the axes (axis-aligned rectangles), we might find that we can perfectly separate any set of four points. Therefore, in this case, the VC dimension for this type of shape-drawing is four.
+
+However, it's important to note that being able to perfectly separate four points doesn't mean we can handle any arrangement of four points. For example, if the four points lie in a straight line, we can't draw a rectangle to perfectly separate them. Despite this limitation, rectangles can still be valuable for larger datasets as most real-world datasets exhibit patterns that make them easier to learn than all possible combinations.
+
+In summary, while the VC dimension might suggest limitations, it's worth considering that real-world datasets often possess characteristics that enable effective learning even with methods having smaller VC dimensions, such as rectangles. These methods are typically preferred over those with larger VC dimensions, which might be overly complex or impractical.

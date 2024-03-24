@@ -1,0 +1,58 @@
+                  LINEAR ALGEBRA IN MACHINE LEARNING
+
+Linear Algebra is the basic mathematics of data.
+Linear algebra is the branch of mathematics concerning linear equations such as a1x1 +......+anxn=b
+In vector notation we say (a^{T}x=b) Called a linear transformation of x
+
+Linear algebra is fundamental to geometry, for defining objects such as lines,
+planes, rotations
+
+Linear equation (a_{1}x_{1}+......+a_{n}x_{n}=b) defines a plane
+in ((x1,...,xn)) space, Straight lines define common solutions
+to equation
+
+Representation of data:
+ 
+ * How can we represent data in a way that a computer can understand
+   Ex Data: images, text, user preferences etc
+ * Organize information into vector
+ * A Vector is a 1-dimensional array of numbers It has both a magnitude and a direction
+ * A feature vector is a vector whose entries represent the "features" of some object
+ * A vector space containing them is called feature space
+ * Essential for understanding ML algorithms
+    E.g., We convert input vectors (x1,...,xn) into outputs by a series of linear     transformations.
+
+DOCUMENTS:
+
+* Given a collection of documents assign to every word a vector whose ith entry is the no. of times the word appears in the ith document.
+
+* These vectors can assemble into large matrix,useful for latent semantic analysis. 
+
+ONE HOT ENCODING:
+
+ One way to represent non-numerical data such as language is to apply one-hot encoding. This assigns to each word a vector with one 1 and 0s elsewhere.
+
+SCALAR:
+
+ Scalar is a single number in contrast to other objects in linear algebra, which are usually arrays of number.It is represented in lower-case italic r. They can be real-valued or be integers. E.g., let ER be the slope of the line - Defining a real-valued scalar. E.g., let nen be the number of units - Defining a natural number scalar.
+
+VECTOR:
+
+ A vector is a 1-D array of numbers each number identified by an index written in lower-case bold such as x its elements are in italics lower case subscripted. If each element is in R then x is in Rn.
+
+MATRICES:
+
+ A matrix is a 2-D arrayof numbers.so each element identified by two indicies
+ Denoted by bold typeface A.
+ If A has shape of height m and width n with real values then A ∈ Rmxn.
+ 
+TENSORS:
+ 
+ Tensors are arrays of numbers, that may have zero dimensions, and be a scalar, one dimension, and be a vector, two dimensions, and be a matrix, or more dimensions. Denote a tensor with this bold typeface: A. Element (i,j,k) of tensor denoted by Aijk.
+ 
+
+ 
+
+
+ 
+

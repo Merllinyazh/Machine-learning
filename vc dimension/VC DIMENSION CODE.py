@@ -32,3 +32,7 @@ def linear_function(point):
 
 
 print(vc_dimension(linear_function))
+
+
+OUTPUT:
+2

@@ -1,9 +1,12 @@
 import streamlit as st
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
-from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+import numpy as np
+
+def label_encode(data):
+    unique_values = np.unique(data)
+    label_map = {val: idx for idx, val in enumerate(unique_values)}
+    encoded_data = [label_map[val] for val in data]
+    return encoded_data, label_map
 
 def main():
     st.title("Tennis Play Prediction")
@@ -28,28 +31,62 @@ def main():
     y = df.iloc[:,-1]
     st.write("\nThe first 5 values of Train output are:\n", y.head())
 
-    # Convert them to numbers 
-    le_outlook = LabelEncoder()
-    X.Outlook = le_outlook.fit_transform(X.Outlook)
+    # Convert categorical variables to numbers 
+    X['Outlook'], outlook_map = label_encode(X['Outlook'])
+    X['Temperature'], temp_map = label_encode(X['Temperature'])
+    X['Humidity'], humidity_map = label_encode(X['Humidity'])
 
-    le_Temperature = LabelEncoder()
-    X.Temperature = le_Temperature.fit_transform(X.Temperature)
+    st.write("\nNow the Train data is :\n", X.head())
 
-    le_Humidity = LabelEncoder()
-    X.Humidity = le_Humidity.fit_transform(X.Humidity)
+    # Convert target labels to numbers
+    y, play_tennis_map = label_encode(y)
+    st.write("\nNow the Train output is\n", y)
 
-    st.write("\nNow the Train data is :\n",X.head())
+    # Split data into train and test sets
+    data_size = X.shape[0]
+    train_size = int(0.8 * data_size)
+    np.random.seed(42)  # For reproducibility
+    indices = np.random.permutation(data_size)
+    train_indices, test_indices = indices[:train_size], indices[train_size:]
+    X_train, X_test = X.iloc[train_indices], X.iloc[test_indices]
+    y_train, y_test = y[train_indices], y[test_indices]
 
-    le_PlayTennis = LabelEncoder()
-    y = le_PlayTennis.fit_transform(y)
-    st.write("\nNow the Train output is\n",y)
+    # Train Gaussian Naive Bayes manually
+    prior_probabilities = {}
+    for label in np.unique(y_train):
+        prior_probabilities[label] = np.sum(y_train == label) / len(y_train)
 
-    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.20, random_state=42)
+    likelihoods = {}
+    for feature in X_train.columns:
+        likelihoods[feature] = {}
+        for label in np.unique(y_train):
+            label_indices = np.where(y_train == label)[0]
+            feature_values = X_train.loc[label_indices, feature]
+            value_counts = np.bincount(feature_values)
+            total_counts = np.sum(value_counts)
+            likelihoods[feature][label] = {value: count / total_counts for value, count in enumerate(value_counts)}
 
-    classifier = GaussianNB()
-    classifier.fit(X_train,y_train)
+    # Predict using Naive Bayes
+    def predict(X):
+        predictions = []
+        for idx, row in X.iterrows():
+            posterior_probabilities = {}
+            for label in np.unique(y_train):
+                posterior_probabilities[label] = prior_probabilities[label]
+                for feature, value in row.iteritems():
+                    if value in likelihoods[feature][label]:
+                        posterior_probabilities[label] *= likelihoods[feature][label][value]
+                    else:
+                        # Handle unseen feature values by assuming a small probability
+                        posterior_probabilities[label] *= 1e-6
+            predictions.append(max(posterior_probabilities, key=posterior_probabilities.get))
+        return predictions
 
-    st.write("Accuracy is:",accuracy_score(classifier.predict(X_test),y_test))
+    # Evaluate accuracy
+    y_pred = predict(X_test)
+    accuracy = np.mean(y_pred == y_test)
+
+    st.write("Accuracy is:", accuracy)
 
 if __name__ == "__main__":
     main()

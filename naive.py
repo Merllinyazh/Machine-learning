@@ -42,6 +42,9 @@ def main():
     y, play_tennis_map = label_encode(y)
     st.write("\nNow the Train output is\n", y)
 
+    # Convert y to NumPy array for indexing
+    y = np.array(y)
+
     # Split data into train and test sets
     data_size = X.shape[0]
     train_size = int(0.8 * data_size)
@@ -61,7 +64,7 @@ def main():
         likelihoods[feature] = {}
         for label in np.unique(y_train):
             label_indices = np.where(y_train == label)[0]
-            feature_values = X_train.loc[label_indices, feature]
+            feature_values = X_train.iloc[label_indices][feature]  # Use iloc for integer-based indexing
             value_counts = np.bincount(feature_values)
             total_counts = np.sum(value_counts)
             likelihoods[feature][label] = {value: count / total_counts for value, count in enumerate(value_counts)}
@@ -73,7 +76,7 @@ def main():
             posterior_probabilities = {}
             for label in np.unique(y_train):
                 posterior_probabilities[label] = prior_probabilities[label]
-                for feature, value in row.iteritems():
+                for feature, value in row.items():  # Use items() instead of iteritems()
                     if value in likelihoods[feature][label]:
                         posterior_probabilities[label] *= likelihoods[feature][label][value]
                     else:

@@ -27,13 +27,9 @@ def em(X, num_clusters, max_iter=100):
     for _ in range(max_iter):
         # E-step
         for k in range(num_clusters):
-            try:
-                diff = X - means[k]
-                exp_term = np.exp(-0.5 * np.sum(diff @ np.linalg.inv(covariances[k]) * diff, axis=1))
-                weights[:, k] = exp_term / np.sqrt(np.linalg.det(covariances[k]) * (2 * np.pi) ** d)
-            except np.linalg.LinAlgError:
-                st.error("Singular covariance matrix encountered. Try different initialization or preprocessing.")
-                return None, None, None
+            diff = X - means[k]
+            exp_term = np.exp(-0.5 * np.sum(diff @ np.linalg.inv(covariances[k]) * diff, axis=1))
+            weights[:, k] = exp_term / np.sqrt(np.linalg.det(covariances[k]) * (2 * np.pi) ** d)
         weights /= weights.sum(axis=1, keepdims=True)
         
         # M-step
@@ -95,32 +91,31 @@ if len(features) >= 2:
     # Apply EM algorithm
     em_labels, _, _ = em(X, num_clusters)
     
-    if em_labels is not None:
-        # Add cluster labels to the data
-        data['EM_Cluster'] = em_labels
-        data['KMeans_Cluster'] = kmeans_labels
-        
-        st.write("Clustering results:")
-        st.write(data)
-        
-        # Plot the clusters using Altair
-        def plot_clusters(data, x_col, y_col, cluster_col, title):
-            chart = alt.Chart(data).mark_circle(size=60).encode(
-                x=alt.X(x_col, title=x_col),
-                y=alt.Y(y_col, title=y_col),
-                color=alt.Color(cluster_col, legend=alt.Legend(title=cluster_col)),
-                tooltip=[x_col, y_col, cluster_col]
-            ).properties(
-                title=title,
-                width=400,
-                height=400
-            ).interactive()
-            return chart
+    # Add cluster labels to the data
+    data['EM_Cluster'] = em_labels
+    data['KMeans_Cluster'] = kmeans_labels
+    
+    st.write("Clustering results:")
+    st.write(data)
+    
+    # Plot the clusters using Altair
+    def plot_clusters(data, x_col, y_col, cluster_col, title):
+        chart = alt.Chart(data).mark_circle(size=60).encode(
+            x=alt.X(x_col, title=x_col),
+            y=alt.Y(y_col, title=y_col),
+            color=alt.Color(cluster_col, legend=alt.Legend(title=cluster_col)),
+            tooltip=[x_col, y_col, cluster_col]
+        ).properties(
+            title=title,
+            width=400,
+            height=400
+        ).interactive()
+        return chart
 
-        x_col, y_col = features[0], features[1]
-        em_chart = plot_clusters(data, x_col, y_col, 'EM_Cluster', 'EM Clustering')
-        kmeans_chart = plot_clusters(data, x_col, y_col, 'KMeans_Cluster', 'k-Means Clustering')
+    x_col, y_col = features[0], features[1]
+    em_chart = plot_clusters(data, x_col, y_col, 'EM_Cluster', 'EM Clustering')
+    kmeans_chart = plot_clusters(data, x_col, y_col, 'KMeans_Cluster', 'k-Means Clustering')
 
-        st.altair_chart(em_chart | kmeans_chart)
+    st.altair_chart(em_chart | kmeans_chart)
 else:
     st.warning("Please select at least two features for clustering.")

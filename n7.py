@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import seaborn as sns
 import altair as alt
 
 # Custom implementation of k-Means algorithm
@@ -120,3 +119,4 @@ if len(features) >= 2:
     st.altair_chart(em_chart | kmeans_chart)
 else:
     st.warning("Please select at least two features for clustering.")
+

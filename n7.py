@@ -16,13 +16,13 @@ def kmeans(X, num_clusters, max_iter=100):
         centroids = new_centroids
     return labels, centroids
 
-# Custom implementation of EM algorithm
-def em(X, num_clusters, max_iter=100):
+# Custom implementation of EM algorithm with regularization
+def em(X, num_clusters, max_iter=100, reg_param=1e-6):
     np.random.seed(0)
     n, d = X.shape
     weights = np.ones((n, num_clusters)) / num_clusters
     means = X[np.random.choice(n, num_clusters, replace=False)]
-    covariances = np.array([np.cov(X, rowvar=False)] * num_clusters)
+    covariances = np.array([np.cov(X, rowvar=False) + reg_param * np.eye(d) for _ in range(num_clusters)])
     
     for _ in range(max_iter):
         # E-step
@@ -37,7 +37,7 @@ def em(X, num_clusters, max_iter=100):
         means = (X.T @ weights / nk).T
         for k in range(num_clusters):
             diff = X - means[k]
-            covariances[k] = (weights[:, k][:, None] * diff).T @ diff / nk[k]
+            covariances[k] = (weights[:, k][:, None] * diff).T @ diff / nk[k] + reg_param * np.eye(d)
     
     labels = np.argmax(weights, axis=1)
     return labels, means, covariances
@@ -88,7 +88,7 @@ if len(features) >= 2:
     # Apply k-Means algorithm
     kmeans_labels, _ = kmeans(X, num_clusters)
     
-    # Apply EM algorithm
+    # Apply EM algorithm with regularization
     em_labels, _, _ = em(X, num_clusters)
     
     # Add cluster labels to the data
